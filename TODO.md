@@ -12,14 +12,14 @@
         - Ability to stage front end for debug.
         - Determine how to manage python dependancies.
 
-    - Create base front end application.
-        - Simple 'Hello World' React application.
+    - ~~Create base front end application.~~
+        - ~~Simple 'Hello World' React application.~~
 
     - Create base back end application.
         - Serve front end application.
         - Connect to mqtt broker.
         - Store all mqtt message in DB.
 
-    - Create virtual test environment.
+    - ~~Create virtual test environment.~~
 
-    - Create build environment.
+    - ~~Create build environment.~~
