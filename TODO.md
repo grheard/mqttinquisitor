@@ -8,8 +8,8 @@
 - Create application base.
     - Decide on structure between front end and back end applications.
 
-        - Ability to debug back end in virtual environment.
-        - Ability to stage front end for debug.
+        - ~~Ability to debug back end in virtual environment.~~
+        - ~~Ability to stage front end for debug.~~
         - Determine how to manage python dependancies.
 
     - ~~Create base front end application.~~

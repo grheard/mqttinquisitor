@@ -1,20 +1,33 @@
 SHELL=/bin/bash
 
 .PHONY: all
-all:
-	@echo "I don't build anything yet."
+all: clean-build webapp
+	@mkdir .build
+	@cp -a mqttinquisitor .build
+	@cp -a webapp/.build .build/mqttinquisitor/webapp
 
 venv: requirements.txt
 	@rm -rf $@
-	virtualenv $@ \
+	virtualenv --python=python3.7 $@ \
 	&& . ./$@/bin/activate \
 	&& pip install -r $<
 
 .PHONY: webapp
 webapp:
-	$(MAKE) -C webapp
+	@$(MAKE) -C webapp
 
 .PHONY: clean
-clean:
+clean: clean-webapp clean-build
+	@echo Cleaned.
+
+.PHONY: clean-venv
+clean-venv:
 	@rm -rf venv
+
+.PHONY: clean-build
+clean-build:
+	@rm -rf .build
+
+.PHONY: clean-webapp
+clean-webapp:
 	@$(MAKE) -C webapp clean
