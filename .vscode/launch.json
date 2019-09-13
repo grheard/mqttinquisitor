@@ -9,8 +9,11 @@
             "type": "python",
             "request": "launch",
             "module": "mqttinquisitor",
-            "cwd": "${workspaceFolder}/.build",
-            "stopOnEntry": true
+            "cwd": "${workspaceFolder}",
+            "stopOnEntry": true,
+            "env": {
+                "PYTHONDONTWRITEBYTECODE": "1"
+            }
         }
     ]
 }

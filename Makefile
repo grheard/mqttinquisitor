@@ -1,9 +1,8 @@
 SHELL=/bin/bash
 
-all: clean-build webapp
-	@mkdir .build
-	@cp -a mqttinquisitor .build
-	@cp -a webapp/.build .build/mqttinquisitor/webapp
+.PHONY: all
+all:
+	@echo "Nothing to do for all."
 
 venv: requirements.txt requirements-dev.txt
 	@rm -rf $@
