@@ -12,7 +12,7 @@ LOGGING_CFG = {
     },
     "formatters": {
         "long": {
-            "format": "%(asctime)s  %(levelname)-8s  %(filename)-20s  %(funcName)-10s  %(message)s"
+            "format": "%(asctime)s  %(levelname)-8s  %(filename)-20s  %(funcName)-20s  %(message)s"
         },
     },
     "handlers": {
