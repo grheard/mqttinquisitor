@@ -7,7 +7,7 @@ LOGGING_CFG = {
     "version": 1,
     "disable_existing_loggers": "False",
     "root": {
-        "level": "INFO",
+        "level": "DEBUG",
         "handlers": ["console"]
     },
     "formatters": {
@@ -21,25 +21,15 @@ LOGGING_CFG = {
             "class": "logging.StreamHandler",
             "formatter": "long"
         }
-    },
-    "loggers": {
-        "debug": {
-            "handlers": ["console"],
-            "level": "DEBUG"
-        },
-        "verbose": {
-            "handlers": ["console"],
-            "level": "INFO"
-        },
     }
 }
 
 
-def custom_logger(env_key='LOG_CFG'):
+def custom_logger():
     _logger = logging.getLogger()
 
-    # Load the configuration
-    logging.config.dictConfig(LOGGING_CFG)
+    if not _logger.hasHandlers():
+        logging.config.dictConfig(LOGGING_CFG)
 
     return _logger
 
