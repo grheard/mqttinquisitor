@@ -17,7 +17,7 @@
 
     - Create base back end application.
         - Serve front end application.
-        - Connect to mqtt broker.
+        - ~~Connect to mqtt broker.~~
         - Store all mqtt message in DB.
 
     - ~~Create virtual test environment.~~
