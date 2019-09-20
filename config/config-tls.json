@@ -3,9 +3,9 @@
         "host": "hab.draeh.org",
         "port": 8883,
         "tls": {
-            "ca": "ca.crt",
-            "client_ca": "laptop.crt",
-            "client_key": "laptop.key"
+            "ca": "tls/ca.crt",
+            "client_ca": "tls/laptop.crt",
+            "client_key": "tls/laptop.key"
         }
     }
 }

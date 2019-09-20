@@ -10,12 +10,12 @@
             "request": "launch",
             "module": "mqttinquisitor",
             "cwd": "${workspaceFolder}",
-            "stopOnEntry": true,
+            "stopOnEntry": false,
             "env": {
                 "PYTHONDONTWRITEBYTECODE": "1"
             },
             //"args": ["--config","{ \"mqtt\": { \"host\": \"192.168.2.50\" } }"]
-            "args": ["--config","config/config-tls.json"]
+            "args": ["--config","config/config.json"]
         }
     ]
 }
