@@ -43,9 +43,10 @@ class Mqtt():
 
     def __on_connect(self, client, userdata, flags, rc):
         logger.info(f"{pahoMqtt.connack_string(rc)}")
-        if self.__callback_on_status:
-            self.__callback_on_status('connect')
-        client.subscribe('#',qos=2)
+        if rc == pahoMqtt.CONNACK_ACCEPTED:
+            if self.__callback_on_status:
+                self.__callback_on_status('connect')
+            client.subscribe('#',qos=2)
 
 
     def __on_disconnect(self, client, userdata, rc):
