@@ -7,16 +7,18 @@ import time
 from mqttinquisitor.logger import logger
 from mqttinquisitor.runtime import isDebug
 from mqttinquisitor.mqtt import Mqtt
+from mqttinquisitor.webserver import WebServer
 
 
 class Main():
     def __init__(self):
-        self.exit = False
         self.__config = {}
 
         self.__parseCommandLineArguments()
 
         self.mqtt = Mqtt(self.__config)
+
+        self.server = WebServer(self.__config)
 
 
     def start(self):
@@ -25,13 +27,13 @@ class Main():
 
         self.mqtt.start()
 
-        while not self.exit:
-            time.sleep(0.2)
+        # Does not return from start.
+        self.server.start()
 
 
     def stop(self):
+        self.server.stop()
         self.mqtt.stop()
-        self.exit = True
 
 
     def __parseCommandLineArguments(self):

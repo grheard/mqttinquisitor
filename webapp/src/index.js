@@ -13,3 +13,9 @@ class App extends Component {
 }
 
 ReactDOM.render(<App/>, document.getElementById('root'));
+
+let ws = new WebSocket('ws://' + document.domain + ':' + location.port + '/test', 'foo');
+
+ws.onopen = function(event) {
+    ws.send('I am foo!');
+};
