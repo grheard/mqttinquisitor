@@ -13,7 +13,9 @@
             "stopOnEntry": true,
             "env": {
                 "PYTHONDONTWRITEBYTECODE": "1"
-            }
+            },
+            //"args": ["--config","{ \"mqtt\": { \"host\": \"192.168.2.50\" } }"]
+            "args": ["--config","config/config-tls.json"]
         }
     ]
 }

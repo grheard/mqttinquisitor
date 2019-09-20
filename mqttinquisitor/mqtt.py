@@ -1,4 +1,5 @@
 import time
+import ssl
 from paho.mqtt import client as pahoMqtt
 from mqttinquisitor.logger import logger
 
@@ -6,7 +7,9 @@ from mqttinquisitor.logger import logger
 class Mqtt():
 
 
-    def __init__(self):
+    def __init__(self, config):
+        self.__parse_config(config)
+
         self.client = pahoMqtt.Client('mqttinquisitor')
         self.client.on_connect = self.__on_connect
         self.client.on_disconnect = self.__on_disconnect
@@ -16,6 +19,26 @@ class Mqtt():
         self.__callback_on_message = None
 
         self.__callback_on_status = None
+
+
+    def __parse_config(self, config):
+        self.__host = '127.0.0.1'
+        self.__port = 1883
+        self.__ca = None
+        self.__client_ca = None
+        self.__client_key = None
+        if 'mqtt' in config:
+            if 'host' in config['mqtt']:
+                self.__host = config['mqtt']['host']
+            if 'port' in config['mqtt']:
+                self.__port = config['mqtt']['port']
+            if 'tls' in config['mqtt']:
+                if 'ca' in config['mqtt']['tls']:
+                    self.__ca = config['mqtt']['tls']['ca']
+                if 'client_ca' in config['mqtt']['tls']:
+                    self.__client_ca = config['mqtt']['tls']['client_ca']
+                if 'client_key' in config['mqtt']['tls']:
+                    self.__client_key = config['mqtt']['tls']['client_key']
 
 
     def __on_connect(self, client, userdata, flags, rc):
@@ -52,9 +75,11 @@ class Mqtt():
 
 
     def start(self):
-        logger.info('Start')
+        logger.info(f"Connecting to {self.__host} port {self.__port}")
+        if not self.__ca is None:
+            self.client.tls_set(ca_certs=self.__ca,certfile=self.__client_ca,keyfile=self.__client_key,tls_version=ssl.PROTOCOL_TLSv1_2)
         self.client.loop_start()
-        self.client.connect('192.168.2.50')
+        self.client.connect_async(self.__host,port=self.__port)
 
 
     def stop(self):
