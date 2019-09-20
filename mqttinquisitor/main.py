@@ -5,7 +5,6 @@ import sys
 import time
 
 from mqttinquisitor.logger import logger
-from mqttinquisitor.runtime import isDebug
 from mqttinquisitor.mqtt import Mqtt
 from mqttinquisitor.webserver import WebServer
 
@@ -22,9 +21,6 @@ class Main():
 
 
     def start(self):
-        if isDebug():
-            logger.info("Debugger detected.")
-
         self.mqtt.start()
 
         # Does not return from start.
