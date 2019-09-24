@@ -7,6 +7,7 @@ import time
 from mqttinquisitor.logger import logger
 from mqttinquisitor.mqtt import Mqtt
 from mqttinquisitor.webserver import WebServer
+from mqttinquisitor.processor import Processor
 
 
 class Main():
@@ -17,7 +18,9 @@ class Main():
 
         self.mqtt = Mqtt(self.__config)
 
-        self.server = WebServer(self.__config)
+        self.processor = Processor(self.mqtt)
+
+        self.server = WebServer(self.__config,self.processor)
 
 
     def start(self):

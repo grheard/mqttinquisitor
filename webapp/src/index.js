@@ -19,3 +19,7 @@ let ws = new WebSocket('ws://' + document.domain + ':' + location.port + '/test'
 ws.onopen = function(event) {
     ws.send('I am foo!');
 };
+
+ws.onmessage = function(event) {
+    console.log(event.data);
+};

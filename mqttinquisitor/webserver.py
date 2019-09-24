@@ -2,39 +2,32 @@ import os
 
 from ast import literal_eval
 
-from advancedhttpserver import AdvancedHTTPServer, RequestHandler, WebSocketHandler
+from advancedhttpserver import AdvancedHTTPServer, RequestHandler
 from advancedhttpserver import __version__
 
 from mqttinquisitor.logger import logger
-
-
-class WSHandler(WebSocketHandler):
-    def on_connected(self):
-        print('Connected.')
-
-    def on_closed(self):
-        print('Disconnected.')
-
-    def on_message_binary(self, message):
-        print('Binary message')
-        # self.send_message(self._opcode_binary, message)
-
-    def on_message_text(self, message):
-        logger.debug(f"{message}")
-        # self.send_message(self._opcode_text, message)
+from mqttinquisitor.webclient import WebClient
 
 
 class WebHandler(RequestHandler):
-    web_socket_handler = WSHandler
+    def on_init(self):
+        self.web_socket_handler = WebClient
+        self.processor = self.server.processor
+
+
+class TheServer(AdvancedHTTPServer):
+   def __init__(self, processor, *args, **kwargs):
+        super(TheServer, self).__init__(*args, **kwargs)
+
+        for server in self.sub_servers:
+            server.processor = processor
 
 
 class WebServer():
-
-
-    def __init__(self, config):
+    def __init__(self, config, processor):
         self.__parse_config(config)
 
-        self.server = AdvancedHTTPServer(WebHandler,address=self.__address)
+        self.server = TheServer(processor,handler_klass=WebHandler,address=self.__address)
         self.server.serve_files = True
         logger.info(f"Serving from {self.__root}")
         self.server.serve_files_root = self.__root
@@ -49,6 +42,8 @@ class WebServer():
             if 'address' in config['webserver']:
                 try:
                     self.__address = literal_eval(config['webserver']['address'])
+                    if not type(self.__address) is tuple:
+                        raise TypeError('')
                 except:
                     logger.error(f"Invalid address tuple '{config['webserver']['address']}'")
                     self.__address = None
