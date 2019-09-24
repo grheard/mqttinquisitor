@@ -16,7 +16,7 @@
         - ~~Simple 'Hello World' React application.~~
 
     - Create base back end application.
-        - Serve front end application.
+        - ~~Serve front end application.~~
         - ~~Connect to mqtt broker.~~
         - Store all mqtt message in DB.
 
