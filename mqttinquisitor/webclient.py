@@ -29,7 +29,7 @@ class WebClient(WebSocketHandler, ClientIf):
         except json.JSONDecodeError:
             logger.error(f"Invalid message '{message}'")
             return
-        self.processor.receive(jmsg)
+        self.processor.receive(self, jmsg)
 
 
     def send(self, message):

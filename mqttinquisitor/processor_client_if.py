@@ -12,7 +12,7 @@ class ProcessorIf(ABC):
         return NotImplemented
 
     @classmethod
-    def receive(self, message):
+    def receive(self, client, message):
         return NotImplemented
 
 

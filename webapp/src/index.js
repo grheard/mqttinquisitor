@@ -17,7 +17,7 @@ ReactDOM.render(<App/>, document.getElementById('root'));
 let ws = new WebSocket('ws://' + document.domain + ':' + location.port + '/test', 'foo');
 
 ws.onopen = function(event) {
-    ws.send('I am foo!');
+    ws.send("{\"text\": \"I am foo!\"}");
 };
 
 ws.onmessage = function(event) {

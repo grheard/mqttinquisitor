@@ -9,7 +9,7 @@ from mqttinquisitor.processor_client_if import ProcessorIf
 class Processor(ProcessorIf):
     def __init__(self, mqtt):
         self.__clientLock = threading.Lock()
-        self.__clients = []
+        self.__clients = {}
 
         self.__mqtt = mqtt
         mqtt.on_message = self.__on_mqtt_message
@@ -22,7 +22,7 @@ class Processor(ProcessorIf):
 
     def __on_mqtt_message(self, message):
         m = {
-            "ts": f"{datetime.datetime.fromtimestamp(message.timestamp)}"
+            "ts": f"{datetime.datetime.utcfromtimestamp(message.timestamp)}"
             ,"topic": message.topic
             ,"payload": message.payload.decode('utf-8')
         }
@@ -36,16 +36,22 @@ class Processor(ProcessorIf):
             if client in self.__clients:
                 logger.error(f"Client '{client}' is already registered")
             else:
-                self.__clients.append(client)
+                self.__clients[client] = {}
+                logger.info(f"Added '{client}'")
 
 
     def unregister_client(self, client):
         with self.__clientLock:
             if client in self.__clients:
-                self.__clients.remove(client)
+                del self.__clients[client]
+                logger.info(f"Removed '{client}'")
             else:
                 logger.error(f"Client '{client}' is not registered")
 
 
-    def receive(self, message):
-        logger.debug(message)
+    def receive(self, client, message):
+        with self.__clientLock:
+            if client in self.__clients:
+                logger.debug(f"{client} '{message}'")
+            else:
+                logger.error(f"Client '{client}' is not registered")
