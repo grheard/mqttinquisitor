@@ -23,3 +23,17 @@
     - ~~Create virtual test environment.~~
 
     - ~~Create build environment.~~
+
+- Logging
+    - Explore possibility of per class logging level.
+        - Can each logging output have specific per module/class specifics?
+    - Define config parameters for logging.
+        - Classes/Modules to log.
+        - Log level per module or class?
+        - What loggers to output to.
+    - Define configurable loggers.
+        - Console.
+        - Rolling file.
+        - Syslog?
+    - Errors and Warnings should always be logged by the console no matter the configuration.
+    - Console by default should only log Errors ans Warning from all modules.
