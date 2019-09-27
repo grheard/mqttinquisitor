@@ -1,0 +1,45 @@
+{
+    "mqtt": {
+        "host": "192.168.2.50",
+        "port": 1883
+    },
+    "webserver": {
+        "root": "webapp/.build"
+    },
+    "logger": {
+        "version": 1,
+        "disable_existing_loggers": "True",
+        "root": {
+            "level": "DEBUG",
+            "handlers": ["console","file"]
+        },
+        "formatters": {
+            "long": {
+                "format": "%(asctime)s  %(levelname)-8s  %(module)-20s  %(funcName)-20s  %(message)s"
+            }
+        },
+        "filters": {
+            "mqttdebug": {
+                "()": "mqttinquisitor.filters.modulefilter",
+                "module": "mqtt",
+                "loglevel": "DEBUG"
+            }
+        },
+        "handlers": {
+            "console": {
+                "level": "WARNING",
+                "class": "logging.StreamHandler",
+                "formatter": "long"
+            },
+            "file": {
+                "level": "DEBUG",
+                "class": "logging.handlers.TimedRotatingFileHandler",
+                "formatter": "long",
+                "backupCount": 30,
+                "when": "midnight",
+                "filename": "logs/mqttinquisitor",
+                "filters": ["mqttdebug"]
+            }
+        }
+    }
+}

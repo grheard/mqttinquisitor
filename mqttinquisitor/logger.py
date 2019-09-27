@@ -12,7 +12,7 @@ LOGGING_CFG = {
     },
     "formatters": {
         "long": {
-            "format": "%(asctime)s  %(levelname)-8s  %(filename)-20s  %(funcName)-20s  %(message)s"
+            "format": "%(asctime)s  %(levelname)-8s  %(module)-20s  %(funcName)-20s  %(message)s"
         },
     },
     "handlers": {
@@ -35,3 +35,12 @@ def custom_logger():
 
 
 logger = custom_logger()
+
+
+def parse_logger_config(config):
+    if 'logger' in config:
+        try:
+            logging.config.dictConfig(config['logger'])
+            logger.critical("Logging was changed by configuration.")
+        except (ValueError, TypeError, AttributeError, ImportError) as ex:
+            logger.critical(f"{ex}")
