@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import json
 import threading
 
@@ -17,15 +17,34 @@ class Processor(ProcessorIf):
 
 
     def __on_mqtt_status(self, status):
-        pass
+        m = {
+            "ts": f"{datetime.utcnow()}"
+            ,"type": "status"
+            ,"payload": status
+        }
+
+        with self.__clientLock:
+            for client in self.__clients:
+                client.send(json.JSONEncoder().encode(m))
 
 
     def __on_mqtt_message(self, message):
         m = {
-            "ts": f"{datetime.datetime.utcfromtimestamp(message.timestamp)}"
+            "ts": f"{datetime.utcfromtimestamp(message.timestamp)}"
+            ,"type": "mqtt"
             ,"topic": message.topic
-            ,"payload": message.payload.decode('utf-8')
         }
+
+        try:
+            m['payload'] = message.payload.decode('utf-8')
+        except:
+            try:
+                h = message.payload.hex()
+                m['payload'] = ' '.join([h[i:i+2] for i in range(0, len(h), 2)])
+            except:
+                logger.error(f"Couldn't decode payload for {message.topic}")
+                return
+
         with self.__clientLock:
             for client in self.__clients:
                 client.send(json.JSONEncoder().encode(m))
