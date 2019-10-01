@@ -18,7 +18,7 @@ class Processor(ProcessorIf):
 
     def __on_mqtt_status(self, status):
         m = {
-            "ts": f"{datetime.utcnow()}"
+            "ts": f"{datetime.now()}"
             ,"type": "status"
             ,"payload": status
         }
@@ -30,7 +30,7 @@ class Processor(ProcessorIf):
 
     def __on_mqtt_message(self, message):
         m = {
-            "ts": f"{datetime.utcfromtimestamp(message.timestamp)}"
+            "ts": f"{datetime.fromtimestamp(message.timestamp)}"
             ,"type": "mqtt"
             ,"topic": message.topic
         }

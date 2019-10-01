@@ -4,10 +4,10 @@ import React, {Component} from 'react';
 function MessageList(props) {
     let messages = props.messages;
     const listItems = messages.map((message) =>
-      <li>{message}</li>
+        <div>{message}</div>
     );
     return (
-      <ul>{listItems}</ul>
+        <div>{listItems}</div>
     );
 }
 
@@ -32,9 +32,13 @@ export class App extends Component {
             let data = JSON.parse(event.data);
             let payload = '';
             try {
+                // If the payload was JSON it will get escaped by
+                // the encoder on the other end. By parsing and
+                // stringify'ing it, the escapes will be removed.
                 payload = JSON.stringify(JSON.parse(data.payload));
             }
             catch (e) {
+                // The payload wasn't JSON.
                 payload = data.payload;
             }
             let s = data.ts + " :: " + data.topic + " :: " + payload;
@@ -46,7 +50,7 @@ export class App extends Component {
     render() {
         return (
             <div className="App">
-                <h1 className="main-header">Hello There!</h1>
+                <h3 className="main-header">mqttinquisitor</h3>
                 <MessageList messages={this.state.messages} />
             </div>
         );
