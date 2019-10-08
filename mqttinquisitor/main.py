@@ -57,6 +57,7 @@ parse_logger_config(config)
 
 
 from mqttinquisitor.mqtt import Mqtt
+from mqttinquisitor.mongo import Mongo
 from mqttinquisitor.webserver import WebServer
 from mqttinquisitor.processor import Processor
 
@@ -66,7 +67,9 @@ class Main():
 
         self.mqtt = Mqtt(config)
 
-        self.processor = Processor(self.mqtt)
+        self.mongo = Mongo(config)
+
+        self.processor = Processor(self.mqtt,self.mongo)
 
         self.server = WebServer(config,self.processor)
 

@@ -4,10 +4,23 @@ import React, {Component} from 'react';
 function MessageList(props) {
     let messages = props.messages;
     const listItems = messages.map((message) =>
-        <div>{message}</div>
+        <React.Fragment>
+        <tr align="left"><td>{message.ts}</td><td>{message.topic}</td><td>{message.payload}</td></tr>
+        </React.Fragment>
     );
     return (
-        <div>{listItems}</div>
+        <table cellPadding="10">
+            <thead>
+                <tr align="left">
+                    <th>Timestamp</th>
+                    <th>Topic</th>
+                    <th>Payload</th>
+                </tr>
+            </thead>
+            <tbody>
+                {listItems}
+            </tbody>
+        </table>
     );
 }
 
@@ -41,8 +54,8 @@ export class App extends Component {
                 // The payload wasn't JSON.
                 payload = data.payload;
             }
-            let s = data.ts + " :: " + data.topic + " :: " + payload;
-            msg.unshift(s);
+            data.payload = payload;
+            msg.unshift(data);
             this.setState({messages: msg});
         };
     }
