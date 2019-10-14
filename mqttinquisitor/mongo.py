@@ -32,10 +32,6 @@ class Mongo():
         entry.save()
 
 
-    def get_document_instance(self):
-        return Message()
-
-
     def query(self,ts=None,count=None) -> []:
         if count is None:
             return []
@@ -43,7 +39,13 @@ class Mongo():
             ts = datetime.utcnow()
 
         results = Message.objects(ts__lt=ts)
-        return results[:count]
+        lst = []
+        for doc in results[:count]:
+            dct = {"ts": f"{doc.ts}", "msgtype": doc.msgtype, "payload": doc.payload}
+            if len(doc.topic) != 0:
+                dct['topic'] = doc.topic
+            lst.append(dct)
+        return lst
 
 
 class Message(Document):

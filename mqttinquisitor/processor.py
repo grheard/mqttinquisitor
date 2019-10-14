@@ -23,15 +23,11 @@ class Processor(ProcessorIf):
 
         self.__db.store(ts,'status',status)
 
-        m = {
+        self.__send_to_clients(json.JSONEncoder().encode({
             "ts": f"{ts}"
-            ,"type": "status"
+            ,"msgtype": "status"
             ,"payload": status
-        }
-
-        with self.__clientLock:
-            for client in self.__clients:
-                client.send(json.JSONEncoder().encode(m))
+        }))
 
 
     def __on_mqtt_message(self, message):
@@ -49,16 +45,12 @@ class Processor(ProcessorIf):
 
         self.__db.store(ts,'mqtt',payload,message.topic)
 
-        m = {
+        self.__send_to_clients(json.JSONEncoder().encode({
             "ts": f"{ts}"
-            ,"type": "mqtt"
+            ,"msgtype": "mqtt"
             ,"topic": message.topic
             ,"payload": payload
-        }
-
-        with self.__clientLock:
-            for client in self.__clients:
-                client.send(json.JSONEncoder().encode(m))
+        }))
 
 
     def register_client(self, client):
@@ -84,4 +76,46 @@ class Processor(ProcessorIf):
             if client not in self.__clients:
                 logger.error(f"Client '{client}' is not registered")
                 return
+
         # process message
+        if 'msgtype' not in message:
+            logger.warning(f"'msgtype' field missing in message '{message}'")
+            return
+
+        if 'query' in message['msgtype']:
+            m = self.__process_query(message)
+            if m is not None:
+                self.__send_to_client(client,m)
+
+
+    def __process_query(self, message) -> str:
+            if 'ts' not in message:
+                ts = None
+            else:
+                ts = message['ts']
+
+            if 'count' not in message:
+                logger.warning(f"'count' field missing in query message '{message}'")
+                return None
+
+            results = self.__db.query(ts,message['count'])
+
+            return json.JSONEncoder().encode({
+                    "msgtype": "query"
+                    ,"results": results
+            })
+
+
+    def __send_to_client(self, client, msg):
+        with self.__clientLock:
+            if client not in self.__clients:
+                logger.error(f"Client '{client}' is not registered")
+                return
+
+            client.send(msg)
+
+
+    def __send_to_clients(self, msg):
+        with self.__clientLock:
+            for client in self.__clients:
+                client.send(msg)
