@@ -35,18 +35,35 @@ export class App extends Component {
             , hasMore: true
         };
 
+        this.connect();
+    }
+
+
+    connect() {
         this.ws = new WebSocket('ws://' + document.domain + ':' + location.port);
+        this.ws.onopen = this.onOpen.bind(this);
+        this.ws.onmessage = this.onMessage.bind(this);
+        this.ws.onclose = this.onClose.bind(this);
+    }
 
-        this.ws.onopen = (event) => {
-            if (this.state.items.length === 0) {
-                this.query(undefined,100);
-            }
-        };
 
-        this.ws.onmessage = (event) => {
-            console.log(event.data);
-            this.processMessage(event.data);
-        };
+    onOpen(event) {
+        if (this.state.items.length === 0) {
+            this.query(undefined,100);
+        }
+    }
+
+
+    onClose(event) {
+        setTimeout(() => {
+            this.connect();
+        }, 3000);
+    }
+
+
+    onMessage(event) {
+        console.debug(event.data);
+        this.processMessage(event.data);
     }
 
 
