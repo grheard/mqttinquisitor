@@ -46,7 +46,7 @@
 - Webapp
     - ~~Implement db query api.~~
     - Implement infinite scroller that can receive live data from the top.
-        - Figure out how to reliably figure out when scrolled to the top.
+        - ~~Figure out how to reliably figure out when scrolled to the top.~~
         - Stop updating live data when scrolling.
         - Query db for newer entries when scroll returned to the top.
         - Resume live data when scroll returned to the top.

@@ -129,8 +129,9 @@ export class App extends Component {
 
 
     onScroll() {
-        let el = document.getElementsByClassName("infinite-scroll-component ");
-        if (el[0].scrollTop === 0) {
+        let el = document.getElementById("scrollableDiv");
+        console.log("scrollTop = " + el.scrollTop);
+        if (el.scrollTop === 0) {
             console.log("To the Top!");
         }
     }
@@ -140,20 +141,23 @@ export class App extends Component {
         return (
             <div className="App">
                 <h3 className="main-header">mqttinquisitor</h3>
-                <InfiniteScroll
-                    dataLength={this.state.items.length}
-                    next={this.fetch.bind(this)}
-                    onScroll={this.onScroll.bind(this)}
-                    hasMore={this.state.hasMore}
-                    loader={<h4>Loading...</h4>}
-                    endMessage={
-                        <p style={{ textAlign: "center" }}>
-                        <b>The End.</b>
-                        </p>
-                    }
-                >
-                    <MessageList messages={this.state.items} />
-                </InfiniteScroll>
+                <div id="scrollableDiv">
+                    <InfiniteScroll
+                        dataLength={this.state.items.length}
+                        next={this.fetch.bind(this)}
+                        onScroll={this.onScroll.bind(this)}
+                        hasMore={this.state.hasMore}
+                        loader={<h4>Loading...</h4>}
+                        scrollableTarget="scrollableDiv"
+                        endMessage={
+                            <p style={{ textAlign: "center" }}>
+                            <b>The End.</b>
+                            </p>
+                        }
+                    >
+                        <MessageList messages={this.state.items} />
+                    </InfiniteScroll>
+                </div>
             </div>
         );
     }
