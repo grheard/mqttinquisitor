@@ -93,7 +93,9 @@ export class App extends Component {
 
     parseQuery(query) {
         if (query.results.length === 0) {
-            this.setState({hasMore: false});
+            if (!query.gt) {
+                this.setState({hasMore: false});
+            }
             return;
         }
 
