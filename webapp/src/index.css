@@ -9,3 +9,7 @@
     bottom: 0;
     width: 99%;
 }
+
+tr:nth-child(even) {
+    background: lightgray;
+}

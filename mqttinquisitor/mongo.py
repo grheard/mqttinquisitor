@@ -32,15 +32,18 @@ class Mongo():
         entry.save()
 
 
-    def query(self,ts=None,count=None) -> []:
-        if count is None:
-            return []
+    def query(self,ts=None,count=None,gt=False) -> []:
         if ts is None:
             ts = datetime.utcnow()
 
-        results = Message.objects(ts__lt=ts)
+        if gt:
+            results = Message.objects(ts__gt=ts)
+        else:
+            results = Message.objects(ts__lt=ts)
+        if count is not None:
+            results = results[:count]
         lst = []
-        for doc in results[:count]:
+        for doc in results:
             dct = {"ts": f"{doc.ts}", "msgtype": doc.msgtype, "payload": doc.payload}
             if len(doc.topic) != 0:
                 dct['topic'] = doc.topic

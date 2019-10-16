@@ -35,6 +35,8 @@ export class App extends Component {
             , hasMore: true
         };
 
+        this.pause = false;
+
         this.connect();
     }
 
@@ -55,6 +57,8 @@ export class App extends Component {
 
 
     onClose(event) {
+        this.pause = false;
+        this.setState({items: [], hasMore: true});
         setTimeout(() => {
             this.connect();
         }, 3000);
@@ -71,10 +75,15 @@ export class App extends Component {
         let data = JSON.parse(message);
 
         if (data.msgtype !== 'query') {
-            data.payload = this.parsePayload(data.payload);
-            let msg = this.state.items;
-            msg.unshift(data);
-            this.setState({items: msg});
+            if (!this.pause) {
+                data.payload = this.parsePayload(data.payload);
+                let msg = this.state.items;
+                msg.unshift(data);
+                this.setState({items: msg});
+            }
+            else {
+                this.evaluatePause();
+            }
         }
         else {
             this.parseQuery(data);
@@ -93,7 +102,13 @@ export class App extends Component {
             m.payload = this.parsePayload(m.payload);
             msg.push(m);
         }
-        this.setState({items: this.state.items.concat(msg)});
+        if (query.gt) {
+            this.pause = false;
+            this.setState({items: msg.concat(this.state.items).slice(0,101)});
+        }
+        else {
+            this.setState({items: this.state.items.concat(msg)});
+        }
     }
 
 
@@ -113,10 +128,16 @@ export class App extends Component {
     }
 
 
-    query(ts, count) {
-        let m = {"msgtype": "query", "count": count};
+    query(ts, count, gt) {
+        let m = {"msgtype": "query"};
         if (ts !== undefined) {
             m.ts = ts;
+        }
+        if (count !== undefined) {
+            m.count = count;
+        }
+        if (gt !== undefined) {
+            m.gt = gt;
         }
         this.ws.send(JSON.stringify(m));
     }
@@ -128,12 +149,20 @@ export class App extends Component {
     }
 
 
-    onScroll() {
+    evaluatePause() {
         let el = document.getElementById("scrollableDiv");
         console.log("scrollTop = " + el.scrollTop);
         if (el.scrollTop === 0) {
-            console.log("To the Top!");
+            this.query(this.state.items[0].ts,undefined,true);
         }
+        else {
+            this.pause = true;
+        }
+    }
+
+
+    onScroll() {
+        this.evaluatePause();
     }
 
 

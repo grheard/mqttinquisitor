@@ -94,14 +94,20 @@ class Processor(ProcessorIf):
             else:
                 ts = message['ts']
 
-            if 'count' not in message:
-                logger.warning(f"'count' field missing in query message '{message}'")
-                return None
+            count = None
+            if 'count' in message:
+                count = message['count']
 
-            results = self.__db.query(ts,message['count'])
+            if 'gt' in message:
+                gt = message['gt']
+            else:
+                gt = False
+
+            results = self.__db.query(ts,count,gt)
 
             return json.JSONEncoder().encode({
                     "msgtype": "query"
+                    ,"gt": gt
                     ,"results": results
             })
 
