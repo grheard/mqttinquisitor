@@ -1,0 +1,40 @@
+{
+    "mqtt": {
+        "host": "192.168.2.50",
+        "port": 1883
+    },
+    "webserver": {
+        "root": "webapp/.build"
+    },
+    "mongo": {
+        "uri": "mongodb://192.168.2.50/mqttinquisitor"
+    },
+    "logger": {
+        "version": 1,
+        "disable_existing_loggers": "True",
+        "root": {
+            "level": "DEBUG",
+            "handlers": ["console"]
+        },
+        "formatters": {
+            "long": {
+                "format": "%(asctime)s  %(levelname)-8s  %(module)-20s  %(funcName)-20s  %(message)s"
+            }
+        },
+        "filters": {
+            "mqttdebug": {
+                "()": "mqttinquisitor.filters.modulefilter",
+                "module": "mqtt",
+                "loglevel": "DEBUG"
+            }
+        },
+        "handlers": {
+            "console": {
+                "level": "DEBUG",
+                "class": "logging.StreamHandler",
+                "formatter": "long",
+                "filters": ["mqttdebug"]
+            }
+        }
+    }
+}

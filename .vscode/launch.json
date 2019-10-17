@@ -14,7 +14,7 @@
             "env": {
                 "PYTHONDONTWRITEBYTECODE": "1"
             },
-            "args": ["--config","{ \"mqtt\": { \"host\": \"192.168.2.50\" }, \"webserver\": { \"root\": \"webapp/.build\" }, \"mongo\": {\"uri\":\"mongodb://192.168.2.50/mqttinquisitor\"} }"]
+            "args": ["--config","config/config-debug.json"]
         }
     ]
 }
