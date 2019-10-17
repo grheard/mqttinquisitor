@@ -51,3 +51,4 @@
         - ~~Query db for newer entries when scroll returned to the top.~~
         - ~~Resume live data when scroll returned to the top.~~
         - Test the pause algorithm for missing messages.
+        - When applyling realtime data, continue to trim the total number of messages to limit browser memory.
