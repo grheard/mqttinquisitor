@@ -2,6 +2,12 @@ import React, {Component} from 'react';
 import InfiniteScroll from "react-infinite-scroll-component";
 
 
+const QUERY_ALL = undefined
+const QUERY_INITIAL_COUNT = 100;
+const QUERY_ADDITIONAL_COUNT = 50;
+const TRIM_COUNT = 199;
+
+
 function MessageList(props) {
     let messages = props.messages;
     const listItems = messages.map((message) =>
@@ -49,9 +55,16 @@ export class App extends Component {
     }
 
 
+    send(message) {
+        let msg = JSON.stringify(message)
+        console.debug('send: ' + msg);
+        this.ws.send(msg);
+    }
+
+
     onOpen(event) {
         if (this.state.items.length === 0) {
-            this.query(undefined,100);
+            this.query(undefined,QUERY_INITIAL_COUNT);
         }
     }
 
@@ -66,7 +79,7 @@ export class App extends Component {
 
 
     onMessage(event) {
-        console.debug(event.data);
+        console.debug('recv: ' + event.data);
         this.processMessage(event.data);
     }
 
@@ -74,19 +87,28 @@ export class App extends Component {
     processMessage(message) {
         let data = JSON.parse(message);
 
-        if (data.msgtype !== 'query') {
-            if (!this.pause) {
-                data.payload = this.parsePayload(data.payload);
-                let msg = this.state.items;
-                msg.unshift(data);
-                this.setState({items: msg});
+        if (data.msgtype === 'mqtt'
+            || data.msgtype === 'status') {
+                this.parseData(data);
+        }
+        else if (data.msgtype === 'query') {
+            this.parseQuery(data);
+        }
+    }
+
+
+    parseData(data) {
+        if (!this.pause) {
+            data.payload = this.parsePayload(data.payload);
+            let msg = this.state.items;
+            if (msg.length > TRIM_COUNT) {
+                msg.length = TRIM_COUNT;
             }
-            else {
-                this.evaluatePause();
-            }
+            msg.unshift(data);
+            this.setState({items: msg});
         }
         else {
-            this.parseQuery(data);
+            this.evaluatePause();
         }
     }
 
@@ -106,10 +128,10 @@ export class App extends Component {
         }
         if (query.gt) {
             this.pause = false;
-            this.setState({items: msg.concat(this.state.items).slice(0,101)});
+            this.setState({items: msg.concat(this.state.items).slice(0,TRIM_COUNT)});
         }
         else {
-            this.setState({items: this.state.items.concat(msg)});
+            this.setState({items: this.state.items.concat(msg), hasMore: (query.results.length >= QUERY_ADDITIONAL_COUNT)});
         }
     }
 
@@ -141,13 +163,13 @@ export class App extends Component {
         if (gt !== undefined) {
             m.gt = gt;
         }
-        this.ws.send(JSON.stringify(m));
+        this.send(m);
     }
 
 
     fetch() {
         let ts = this.state.items[this.state.items.length - 1].ts;
-        this.query(ts,30);
+        this.query(ts,QUERY_ADDITIONAL_COUNT);
     }
 
 
@@ -155,7 +177,7 @@ export class App extends Component {
         let el = document.getElementById("scrollableDiv");
         console.log("scrollTop = " + el.scrollTop);
         if (el.scrollTop === 0) {
-            this.query(this.state.items[0].ts,undefined,true);
+            this.query(this.state.items[0].ts,QUERY_ALL,true);
         }
         else {
             this.pause = true;
