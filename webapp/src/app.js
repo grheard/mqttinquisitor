@@ -3,9 +3,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 
 
 const QUERY_ALL = undefined
-const QUERY_INITIAL_COUNT = 100;
-const QUERY_ADDITIONAL_COUNT = 50;
-const TRIM_COUNT = 199;
+const QUERY_COUNT = 100;
 
 
 function MessageList(props) {
@@ -48,6 +46,7 @@ export class App extends Component {
 
 
     connect() {
+        console.debug('socket connect');
         this.ws = new WebSocket('ws://' + document.domain + ':' + location.port);
         this.ws.onopen = this.onOpen.bind(this);
         this.ws.onmessage = this.onMessage.bind(this);
@@ -63,13 +62,15 @@ export class App extends Component {
 
 
     onOpen(event) {
+        console.debug('socket open');
         if (this.state.items.length === 0) {
-            this.query(undefined,QUERY_INITIAL_COUNT);
+            this.query(undefined,QUERY_COUNT);
         }
     }
 
 
     onClose(event) {
+        console.debug('socket closed');
         this.pause = false;
         this.setState({items: [], hasMore: true});
         setTimeout(() => {
@@ -101,11 +102,12 @@ export class App extends Component {
         if (!this.pause) {
             data.payload = this.parsePayload(data.payload);
             let msg = this.state.items;
-            if (msg.length > TRIM_COUNT) {
-                msg.length = TRIM_COUNT;
+            if (msg.length > QUERY_COUNT) {
+                msg.length = QUERY_COUNT;
             }
             msg.unshift(data);
-            this.setState({items: msg});
+            this.setState({items: msg, hasMore: (msg.length >= QUERY_COUNT)});
+            console.debug(this.parseData.name + ' items: ' + msg.length);
         }
         else {
             this.evaluatePause();
@@ -117,6 +119,7 @@ export class App extends Component {
         if (query.results.length === 0) {
             if (!query.gt) {
                 this.setState({hasMore: false});
+                console.debug(this.parseQuery.name + ' no more items to load');
             }
             return;
         }
@@ -128,10 +131,13 @@ export class App extends Component {
         }
         if (query.gt) {
             this.pause = false;
-            this.setState({items: msg.concat(this.state.items).slice(0,TRIM_COUNT)});
+            msg = msg.concat(this.state.items).slice(0,QUERY_COUNT);
+            this.setState({items: msg, hasMore: (msg.length >= QUERY_COUNT)});
+            console.debug(this.parseQuery.name + ' items: ' + msg.length);
         }
         else {
-            this.setState({items: this.state.items.concat(msg), hasMore: (query.results.length >= QUERY_ADDITIONAL_COUNT)});
+            this.setState({items: this.state.items.concat(msg), hasMore: (query.results.length >= QUERY_COUNT)});
+            console.debug(this.parseQuery.name + ' items: ' + this.state.items.length);
         }
     }
 
@@ -169,7 +175,7 @@ export class App extends Component {
 
     fetch() {
         let ts = this.state.items[this.state.items.length - 1].ts;
-        this.query(ts,QUERY_ADDITIONAL_COUNT);
+        this.query(ts,QUERY_COUNT);
     }
 
 
