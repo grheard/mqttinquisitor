@@ -6,9 +6,6 @@
     "webserver": {
         "root": "webapp/.build"
     },
-    "mongo": {
-        "uri": "mongodb://192.168.2.50/mqttinquisitor"
-    },
     "logger": {
         "version": 1,
         "disable_existing_loggers": "True",

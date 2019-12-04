@@ -57,9 +57,9 @@ parse_logger_config(config)
 
 
 from mqttinquisitor.mqtt import Mqtt
-from mqttinquisitor.mongo import Mongo
 from mqttinquisitor.webserver import WebServer
 from mqttinquisitor.processor import Processor
+from mqttinquisitor.db_factory import create_db_interface
 
 
 class Main():
@@ -67,9 +67,9 @@ class Main():
 
         self.mqtt = Mqtt(config)
 
-        self.mongo = Mongo(config)
+        self.db = create_db_interface(config)
 
-        self.processor = Processor(self.mqtt,self.mongo)
+        self.processor = Processor(self.mqtt,self.db)
 
         self.server = WebServer(config,self.processor)
 
